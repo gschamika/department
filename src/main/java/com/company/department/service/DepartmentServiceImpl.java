@@ -1,7 +1,6 @@
 package com.company.department.service;
 
 import com.company.department.entity.Department;
-import com.company.department.exception.DepProjectException;
 import com.company.department.exception.ResourceNotFoundException;
 import com.company.department.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,31 +21,21 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department saveDepartment(Department department) {
-        try {
-            return departmentRepository.save(department);
-        } catch (Exception e) {
-            throw new DepProjectException("Error creating department", e);
-        }
+        return departmentRepository.save(department);
     }
 
     @Override
-    public Optional<Department> getDepartmentById(Long id) {
-        try {
-            return Optional.ofNullable(departmentRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(DEPARTMENT_NOT_FOUND + id)));
-        } catch (ResourceNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DepProjectException("Error retrieving department", e);
+    public Department getDepartmentById(Long id) {
+        Optional<Department> department =  departmentRepository.findById(id);
+        if (department.isPresent()) {
+            return department.get();
+        } else {
+            throw new ResourceNotFoundException(DEPARTMENT_NOT_FOUND + id);
         }
     }
 
     @Override
     public List<Department> getAllDepartments() {
-        try {
-            return departmentRepository.findAll();
-        } catch (Exception e) {
-            throw new DepProjectException("Error retrieving department", e);
-        }
+        return departmentRepository.findAll();
     }
 }
